@@ -129,6 +129,7 @@ static const Key stdkeys[] = {
 { .keyv.c = CONTROL('K'), { t_eol, t_rw, 0,   0 },  f_delete,    { .m = m_nextchar    } },
 { .keyv.c = CONTROL('K'), { t_rw,  0,    0,   0 },  f_delete,    { .m = m_eol         } },
 { .keyv.c = CONTROL('E'), { t_rw,  0,    0,   0 },  f_eval,    { .m = m_eol         } },
+{ .keyv.c = CONTROL('E'), { t_sel,  t_rw,    0,   0 },  f_eval,    { .m = m_tosel      } },
 { .keyv.c = CONTROL('L'), { 0,     0,    0,   0 },  f_center,    { 0                  } },
 { .keyv.c = META('l'),    { t_sel, t_rw, 0,   0 },  f_pipe,      { .v = "tr [A-ZÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞ] [a-zàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþ]" } }, /* Lowercase */
 { .keyv.c = CONTROL('M'), { t_rw,  t_ai, 0,   0 },  f_pipeai,    { .v = AUTOINDENT    } } ,

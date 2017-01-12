@@ -395,8 +395,8 @@ f_delete(const Arg * arg) {
 void
 f_eval(const Arg * arg) {
 
-    Filepos pos = fcur;
-    const char *str = fcur.l->c;
+    Filepos pos = arg->m(fcur);
+    const char *str = pos.l->c;
     runt_vm *vm = &g_vm;
     runt_pmark_set(vm);
     runt_compile(vm, str);
