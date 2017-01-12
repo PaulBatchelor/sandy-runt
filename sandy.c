@@ -15,6 +15,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <limits.h>
+#include <runt.h>
 
 #include "arg.h"
 
@@ -194,6 +195,8 @@ static Arg      varg;                                /* Arguments of the verb (s
 static int      vi;                                  /* Helping var to store place of verb in key chain */
 static int      multiply = 1;                        /* Times to replay a command */
 
+static runt_vm g_vm;
+
 /* allocate memory or die. */
 static void *ecalloc(size_t, size_t);
 static void *erealloc(void *, size_t);
@@ -204,6 +207,7 @@ static char *estrdup(const char *);
 static void f_adjective(const Arg *);
 static void f_center(const Arg *);
 static void f_delete(const Arg *);
+static void f_eval(const Arg *);
 static void f_extsel(const Arg *);
 static void f_findbw(const Arg *);
 static void f_findfw(const Arg *);
@@ -386,6 +390,18 @@ f_delete(const Arg * arg) {
 		fsel.o = fsel.l->len;
 	statusflags |= S_Modified;
 	lastaction = LastDelete;
+}
+
+void
+f_eval(const Arg * arg) {
+
+    Filepos pos = fcur;
+    const char *str = fcur.l->c;
+    runt_vm *vm = &g_vm;
+    runt_pmark_set(vm);
+    runt_compile(vm, str);
+    runt_pmark_free(vm);
+    fflush(vm->fp);
 }
 
 /* Extend the selection as per arg->i (see enums above) */
@@ -2316,11 +2332,28 @@ t_warn(void) {
 	return (statusflags & S_Warned);
 }
 
+static void init_runt(runt_vm *vm, 
+    runt_cell *cells, 
+    unsigned char *mem, 
+    FILE *tape)
+{
+    runt_init(vm);
+    runt_filehandle(vm, tape);
+
+    runt_cell_pool_set(vm, cells, 1024);
+    runt_cell_pool_init(vm);
+    runt_memory_pool_set(vm, mem, 4 * RUNT_MEGABYTE);
+    runt_load_stdlib(vm);
+    runt_set_state(vm, RUNT_MODE_INTERACTIVE, RUNT_ON);
+}
+
 /* main() starts everything else */
 int
 main(int argc, char *argv[]) {
 	char *local_syn = NULL;
-
+    unsigned char *mem;
+    runt_cell *cells;
+    FILE *tape;
 	/* Use system locale, hopefully UTF-8 */
 	setlocale(LC_ALL, "");
 
@@ -2351,6 +2384,11 @@ main(int argc, char *argv[]) {
 		break;
 	} ARGEND;
 
+    mem = malloc(4 * RUNT_MEGABYTE);
+    cells = malloc(sizeof(runt_cell) * 1024);
+    tape = fopen("tape", "a");
+    init_runt(&g_vm, cells, mem, tape);
+
 	i_setup();
 
 	if(argc > 0)
@@ -2361,5 +2399,9 @@ main(int argc, char *argv[]) {
 
 	i_edit();
 	i_cleanup(EXIT_SUCCESS);
+    runt_close_plugins(&g_vm);
+    free(mem);
+    free(cells);
+    fclose(tape);
 	return EXIT_SUCCESS;
 }

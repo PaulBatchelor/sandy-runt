@@ -9,7 +9,7 @@ MANPREFIX = ${PREFIX}/share/man
 
 # includes and libs (ncurses)
 INCS = -I. -I/usr/include
-LIBS = -L/usr/lib -lc -lncurses
+LIBS = -L/usr/lib -lc -lncurses -lrunt -ldl
 
 # flags
 CPPFLAGS = -DVERSION=\"${VERSION}\" -D_BSD_SOURCE -D_POSIX_C_SOURCE=200809L

@@ -45,6 +45,7 @@ static void f_pipenull(const Arg*);
 #define SED     PROMPT("Sed:",         "",                "!sed ")
 #define CMD_P   PROMPT("Command:",     "/\n?\nw\nq\n!\nsyntax\noffset\nicase\nro\nai\ndump", "")
 
+
 /* Args to f_pipe and friends, simple examples are inlined instead */
 #define TOCLIP     "tee /tmp/.sandy.clipboard.$USER | xsel -ib 2>/dev/null"
 #define FROMCLIP   "xsel -ob 2>/dev/null || cat /tmp/.sandy.clipboard.$USER"
@@ -117,7 +118,6 @@ static const Key stdkeys[] = {
 { .keyv.c = CONTROL('D'), { t_sel, t_rw, 0,   0 },  f_pipe,      { .v = TOCLIP        } },
 { .keyv.c = CONTROL('D'), { t_rw,  0,    0,   0 },  f_delete,    { .m = m_nextchar    } },
 { .keyv.c = META('d'),    { t_rw,  0,    0,   0 },  f_delete,    { .m = m_nextword    } },
-{ .keyv.c = CONTROL('E'), { 0,     0,    0,   0 },  f_move,      { .m = m_eol         } },
 { .keyv.c = CONTROL('F'), { 0,     0,    0,   0 },  f_move,      { .m = m_nextchar    } },
 { .keyv.c = META('f'),    { 0,     0,    0,   0 },  f_move,      { .m = m_nextword    } },
 { .keyv.c = CONTROL('G'), { t_sel, 0,    0,   0 },  f_select,    { .m = m_stay        } },
@@ -128,6 +128,7 @@ static const Key stdkeys[] = {
 { .keyv.c = CONTROL('J'), { 0,     0,    0,   0 },  f_move,      { .m = m_nextline    } },
 { .keyv.c = CONTROL('K'), { t_eol, t_rw, 0,   0 },  f_delete,    { .m = m_nextchar    } },
 { .keyv.c = CONTROL('K'), { t_rw,  0,    0,   0 },  f_delete,    { .m = m_eol         } },
+{ .keyv.c = CONTROL('E'), { t_rw,  0,    0,   0 },  f_eval,    { .m = m_eol         } },
 { .keyv.c = CONTROL('L'), { 0,     0,    0,   0 },  f_center,    { 0                  } },
 { .keyv.c = META('l'),    { t_sel, t_rw, 0,   0 },  f_pipe,      { .v = "tr [A-ZÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞ] [a-zàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþ]" } }, /* Lowercase */
 { .keyv.c = CONTROL('M'), { t_rw,  t_ai, 0,   0 },  f_pipeai,    { .v = AUTOINDENT    } } ,
